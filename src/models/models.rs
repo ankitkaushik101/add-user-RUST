@@ -11,13 +11,13 @@ use crate::schema::users;
 pub struct User {
     pub id: String,
     pub name: String,
-    pub phone: Option<String>,
+    pub phone: String,
     pub email: String,
     pub password: String,
 }
 
 #[derive(Insertable, Serialize, AsChangeset)]
-#[diesel(table_name = users)]
+#[table_name = "users"]
 pub struct NewUser<'a> {
     pub id: &'a str,
     pub name: &'a str,
@@ -25,6 +25,7 @@ pub struct NewUser<'a> {
     pub email: &'a str,
     pub password: &'a str,
 }
+
 
 #[derive(Deserialize)]
 pub struct UserInputUser {

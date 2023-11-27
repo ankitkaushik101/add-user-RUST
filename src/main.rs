@@ -5,9 +5,9 @@ use rocket::serde::json::{json, Value};
 mod routes;
 mod services;
 
-// import routes here
+//import of all routes 
 use routes::index::index;
-// use routes::users::{get_users, create_role, create_user, update_user};
+use routes::users::create_user;
 
 #[catch(404)]
 fn not_found() -> Value {
@@ -27,6 +27,6 @@ fn server_error() -> Value {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index])
+    rocket::build().mount("/", routes![index,create_user])
     .register("/", catchers![not_found, server_error])
 }
