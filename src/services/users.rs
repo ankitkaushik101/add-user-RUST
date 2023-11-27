@@ -1,6 +1,6 @@
 use diesel:: prelude::*;
 use initialref::{
-    models::models::{NewUser,UserInputUser,User},
+    models::models::{NewUser,UserInputUser,User,UserInputUpdateUser},
     *,
 };
 
@@ -45,4 +45,41 @@ pub fn get_users() -> Value {
     let results: Vec<User> = users.load::<User>(connection).expect("Error loading posts");
 
     json!(results)
+}
+
+
+
+pub fn update_user(user_details: &UserInputUpdateUser) -> Value {
+    use initialref::schema::users::dsl::*;
+
+    let connection = &mut establish_connection();
+
+    let existing_user = users
+    .filter(email.eq(user_details.email.clone().unwrap()))
+    .limit(1)
+    .load::<User>(connection)
+    .expect("Error fetching user");
+
+    let hashed: String;
+
+    let updated_user_body: NewUser = NewUser {
+        id: &existing_user[0].id,
+        name: &user_details.name.clone().unwrap_or(existing_user[0].name.clone()),
+        phone: &user_details.phone.clone().unwrap_or(existing_user[0].phone.clone()),
+        email: &user_details.email.clone().unwrap_or(existing_user[0].email.clone()),
+        password: match &user_details.password {
+            Some(new_password) => {
+                hashed = hash(new_password, DEFAULT_COST).unwrap();
+                &hashed
+            },
+            None => &existing_user[0].password,
+        },
+    };
+    
+    let updated_user: User = diesel::update(users.filter(email.eq(user_details.email.clone().unwrap())))
+    .set(&updated_user_body)
+    .get_result::<User>(connection)
+    .expect("Error updating user");
+
+    json!(updated_user)
 }
