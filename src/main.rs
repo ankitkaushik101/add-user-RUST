@@ -27,6 +27,8 @@ fn server_error() -> Value {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index,create_user,get_user,update_user])
+    rocket::build()
+    .configure(rocket::Config::figment().merge(("port", 9797)))
+    .mount("/", routes![index,create_user,get_user,update_user])
     .register("/", catchers![not_found, server_error])
 }
