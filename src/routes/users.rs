@@ -9,3 +9,8 @@ use crate::services;
 pub fn create_user(user_info: Json<UserInputUser>) -> Value {
     services::users::create_user(&user_info)
 }
+
+#[get("/get-user")]
+pub fn get_user()-> Value {
+    services::users::get_users()
+}

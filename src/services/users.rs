@@ -34,3 +34,15 @@ pub fn create_user(user_details: &UserInputUser) -> Value {
 
     json!(created_user)
 }   
+
+
+
+pub fn get_users() -> Value {
+    use initialref::schema::users::dsl::*;
+
+    let connection = &mut establish_connection();
+
+    let results: Vec<User> = users.load::<User>(connection).expect("Error loading posts");
+
+    json!(results)
+}
