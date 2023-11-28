@@ -7,7 +7,7 @@ mod services;
 
 //import of all routes 
 use routes::index::index;
-use routes::users::{create_user,get_user,update_user};
+use routes::users::{create_user,get_user,update_user,delete_user};
 
 #[catch(404)]
 fn not_found() -> Value {
@@ -29,6 +29,6 @@ fn server_error() -> Value {
 fn rocket() -> _ {
     rocket::build()
     .configure(rocket::Config::figment().merge(("port", 9797)))
-    .mount("/", routes![index,create_user,get_user,update_user])
+    .mount("/", routes![index,create_user,get_user,update_user,delete_user])
     .register("/", catchers![not_found, server_error])
 }

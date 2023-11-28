@@ -1,6 +1,6 @@
 use diesel:: prelude::*;
 use initialref::{
-    models::models::{NewUser,UserInputUser,User,UserInputUpdateUser},
+    models::models::{NewUser,UserInputUser,User,UserInputUpdateUser,UserInputEmail},
     *,
 };
 
@@ -82,4 +82,37 @@ pub fn update_user(user_details: &UserInputUpdateUser) -> Value {
     .expect("Error updating user");
 
     json!(updated_user)
+}
+
+
+
+pub fn delete_user(user_details: &UserInputEmail) -> Value {
+     use initialref::schema::users::dsl::*;
+    //  println!("Received email for deletion: {}", &email.email);
+
+    let connection = &mut establish_connection();
+    
+
+    // Check if the user exists before attempting to delete
+    let existing_user = users
+        .filter(email.eq(&user_details.email))
+        .limit(1)
+        .load::<User>(connection)
+        .expect("Error fetching user");
+
+    if existing_user.is_empty() {
+        return json!({
+            "error": "User not found",
+        });
+    }
+
+    // Delete the user
+    let deleted_user: User = diesel::delete(users.filter(email.eq(&user_details.email)))
+        .get_result(connection)
+        .expect("Error deleting user");
+
+    json!({
+        "message": "User deleted successfully",
+        "user":deleted_user,
+    })
 }

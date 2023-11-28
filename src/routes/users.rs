@@ -1,5 +1,5 @@
 use rocket::serde::json::{Value, Json};
-use initialref::models::models::{UserInputUser,UserInputUpdateUser};
+use initialref::models::models::{UserInputUser,UserInputUpdateUser,UserInputEmail};
 
 // import services module
 use crate::services;
@@ -18,4 +18,9 @@ pub fn get_user()-> Value {
 #[put("/update-user", format = "json", data = "<user_info>")]
 pub fn update_user(user_info: Json<UserInputUpdateUser>) -> Value {
     services::users::update_user(&user_info)
+}
+
+#[delete("/del-user", format = "json", data= "<user_info>")]
+pub fn delete_user(user_info: Json<UserInputEmail>) -> Value {
+    services::users::delete_user(&user_info)
 }
